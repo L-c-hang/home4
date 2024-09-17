@@ -1,0 +1,622 @@
+\documentclass{article}
+
+% 导入中文宏包
+\usepackage{array}
+\usepackage{caption}
+\usepackage{ctex}
+\usepackage{hyperref}
+% 设置页面边距
+\usepackage{geometry}
+\usepackage{graphicx}
+\geometry{a4paper, left=2cm, right=2cm, top=3cm, bottom=4cm}
+
+% 设置标题、作者和日期
+\title{元编程与Pytorch编程}
+\author{23020007073  刘畅}
+
+\begin{document}
+
+% 生成标题、作者和日期
+\maketitle
+
+% 心得报告正文
+\section{实验目的}
+本次课程主要掌握代码的调试及性能分析、元编程和Pytorch编程。
+
+\section{练习内容}
+\subsection{调试及性能分析样例8个}
+
+
+
+
+1.pdb断点的使用
+\begin{verbatim}
+   import pdb
+   def add(a, b):
+      pdb.set_trace()  # 设置断点
+      return a + b
+   result = add(8, 9)
+   print("Result:", result)
+  
+   断点操作如下：
+   l（或list）：列出当前执行点周围的代码。
+   n（或next）：执行当前行，并停在下一行。
+   s（或step）：进入函数内部。
+   c（或continue）：继续执行程序，直到下一个断点。
+   q（或quit）：退出调试器。
+   p（或print）：打印表达式的值。
+   pp：以更可读的格式打印表达式的值。
+   b（或break）：设置断点，例如b 10在第十行设置断点。
+   clear：清除一个或所有断点。
+   a（或args）：打印当前函数的参数。
+   r（或return）：执行函数直到返回。
+   j（或jump）：跳转到指定行。
+   w（或where）：打印当前堆栈跟踪。
+ \end{verbatim}
+
+
+\noindent
+\begin{minipage}{\linewidth}
+  \centering
+  % 插入图片
+  \includegraphics[width=0.5\linewidth]{duandian.png}
+  % 图片标题
+  \captionof{figure}{pdb断点的设置}
+  \label{fig:example}
+\end{minipage}
+
+2.assert的使用
+\begin{verbatim}
+	def add_positive_numbers(a, b):
+	assert a > 0 and b > 0, "Both numbers must be positive"
+	return a + b
+	# 调试情况，将触发断言错误
+	print(add_positive_numbers(-1, 2))
+	# 正常情况
+	print(add_positive_numbers(1, 2))
+\end{verbatim}
+
+
+\noindent
+\begin{minipage}{\linewidth}
+	\centering
+	% 插入图片
+	\includegraphics[width=0.5\linewidth]{assert.png}
+	% 图片标题
+	\captionof{figure}{assert的使用}
+	\label{fig:example}
+\end{minipage}
+
+3.使用日志记录调试
+ \begin{verbatim}
+    import logging
+    logging.basicConfig(level=logging.DEBUG)
+    def divide(a, b):
+       logging.debug(f"Dividing {a} by {b}")
+       try:
+           result = a / b
+       except ZeroDivisionError:
+           logging.error("Division by zero!")
+           return None
+       logging.debug(f"Result is {result}")
+       return result
+  
+    print(divide(15, 3))
+    print(divide(15, 0))
+ \end{verbatim}
+
+\noindent
+\begin{minipage}{\linewidth}
+  \centering
+  % 插入图片
+  \includegraphics[width=0.5\linewidth]{rizhijilu.png}
+  % 图片标题
+  \captionof{figure}{日志记录调试}
+  \label{fig:example}
+\end{minipage}
+
+4.
+\begin{verbatim}
+   当函数抛出异常时，traceback.print_exc()会打印出异常的堆栈跟踪，帮助定位问题。
+    import traceback
+    def cause_error():
+        return 1 / 0
+    try:
+        cause_error()
+    except Exception:
+        traceback.print_exc()
+\end{verbatim}
+
+\noindent
+\begin{minipage}{\linewidth}
+ \centering
+  % 插入图片
+  \includegraphics[width=0.5\linewidth]{trackback.png}
+  % 图片标题
+  \captionof{figure}{traceback模块打印异常信息}
+  \label{fig:example}
+\end{minipage}
+
+5.
+\begin{verbatim}
+	使用memory_profiler模块来分析函数内存使用情况
+	from memory_profiler import profile
+	@profile
+	def create_large_list():
+	large_list = [0] * int(1e7)
+	return large_list
+	create_large_list()
+\end{verbatim}
+
+\noindent
+\begin{minipage}{\linewidth}
+	\centering
+	% 插入图片
+	\includegraphics[width=0.5\linewidth]{memory.png}
+	% 图片标题
+	\captionof{figure}{结果如图}
+	\label{fig:example}
+\end{minipage}
+
+6.
+\begin{verbatim}
+   这段代码通过cProfile模块记录并分析了example_function的运行时间，
+   然后使用pstats模块打印出了性能分析的结果。
+    import cProfile
+    import pstats
+    def example_function():
+      total = 0
+      for i in range(1000):
+          total += i
+      return total
+    # 使用cProfile运行函数并保存性能数据
+    profiler = cProfile.Profile()
+    profiler.enable()
+    example_function()
+    profiler.disable()
+    # 打印性能分析结果
+    stats = pstats.Stats(profiler).sort_stats('cumtime')
+    stats.print_stats()     
+\end{verbatim}
+
+
+\noindent
+\begin{minipage}{\linewidth}
+ \centering
+  % 插入图片
+  \includegraphics[width=0.5\linewidth]{cprofile.png}
+  % 图片标题
+  \captionof{figure}{cProfile进行性能分析}
+  \label{fig:example}
+\end{minipage}
+
+7.
+\begin{verbatim}
+	用start_time和end_time记录时间
+	import time
+	start_time = time.time()
+	squares = []
+	for i in range(1000):
+	squares.append(i**2)
+	end_time = time.time()
+	print(f"Using loop: {end_time - start_time} seconds")       
+\end{verbatim}
+
+\noindent
+\begin{minipage}{\linewidth}
+	\centering
+	% 插入图片
+	\includegraphics[width=0.5\linewidth]{time.png}
+	% 图片标题
+	\captionof{figure}{time进行时间记录}
+	\label{fig:example}
+\end{minipage}
+
+
+8.
+\begin{verbatim}
+	用timeit重复运行函数并计算平均运行时间
+     import timeit
+     import logging
+     # 配置日志记录器
+    logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+    def debug_example(x):
+       logging.debug(f"Entering debug_example with argument: {x}")
+       result = x * 2
+       logging.debug(f"Exiting debug_example with result: {result}")
+       return result
+     # 调用函数并观察日志输出
+    debug_example(10)
+    def performance_test():
+       total = 0
+       for i in range(1000):
+           total += i
+       return total
+    # 使用timeit重复运行函数并计算平均运行时间
+    execution_time = timeit.timeit('performance_test()', globals=globals(), number=1000)
+    print(f"Function performance_test executed 1000 times in {execution_time:.4f} seconds")
+\end{verbatim}
+
+
+
+\noindent
+\begin{minipage}{\linewidth}
+ \centering
+  % 插入图片
+  \includegraphics[width=0.5\linewidth]{timeit.png}
+  % 图片标题
+  \captionof{figure}{timeit计算运行时间}
+  \label{fig:example}
+\end{minipage}
+
+
+
+
+
+\subsection{元编程学习例子9个}
+
+1. 使用装饰器修饰函数
+\begin{verbatim}
+    def debug(func):
+    def wrapper(*args, **kwargs):
+       print(f"Calling function: {func.__name__}")
+       result = func(*args, **kwargs)
+       print(f"Function {func.__name__} returned: {result}")
+       return result
+    return wrapper
+    @debug
+    def add(a, b):
+       return a + b
+    # 调用装饰过的函数
+    add(1, 6)
+\end{verbatim}
+
+\begin{minipage}{\linewidth}
+    \centering
+     % 插入图片
+     \includegraphics[width=0.5\linewidth]{add.png}
+     % 图片标题
+     \captionof{figure}{调用装饰过函数后的结果}
+     \label{fig:example}
+\end{minipage}
+
+
+2.使用装饰器修饰类
+\begin{verbatim}
+    def add_property(cls):
+      cls.new_property = "This is a new property"
+      return cls
+    @add_property
+    class MyClass:
+     pass
+    # 检查新属性
+    print(MyClass.new_property)
+\end{verbatim}
+
+
+\noindent
+\begin{minipage}{\linewidth}
+ \centering
+  % 插入图片
+  \includegraphics[width=0.5\linewidth]{t2.png}
+  % 图片标题
+  \captionof{figure}{调用装饰过类后的结果}
+  \label{fig:example}
+\end{minipage}
+
+3.
+\begin{verbatim}
+	使用__slots__限制对象属性
+	class MyClass:
+	__slots__ = ['name']
+	def __init__(self, name):
+	self.name = name
+	obj = MyClass('John')
+	obj.age = 30  
+	print(obj.name)
+	print(obj.age)
+\end{verbatim}
+
+\noindent
+\begin{minipage}{\linewidth}
+	\centering
+	% 插入图片
+	\includegraphics[width=0.5\linewidth]{t3.png}
+	% 图片标题
+	\captionof{figure}{限制对象属性输出结果}
+	\label{fig:example}
+\end{minipage}
+
+
+4.使用exec函数动态执行了一段包含函数定义的字符串代码，
+然后调用这个新定义的函数，并输出结果
+
+\begin{verbatim}
+	code = "def hello(): print('Hello World')"
+	exec(code)
+	hello()  # 输出: Hello World
+\end{verbatim}
+
+
+\noindent
+\begin{minipage}{\linewidth}
+	\centering
+	% 插入图片
+	\includegraphics[width=0.5\linewidth]{t4.png}
+	% 图片标题
+	\captionof{figure}{hello()输出后的结果}
+	\label{fig:example}
+\end{minipage}
+
+
+
+5.使用修饰器改变函数行为
+\begin{verbatim}
+    from functools import wraps
+    def add_hello(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+           print("Hello")
+           return func(*args, **kwargs)
+        return wrapper
+     @add_hello
+    def say_goodbye():
+           print("Goodbye")
+    say_goodbye()
+\end{verbatim}
+
+\noindent
+\begin{minipage}{\linewidth}
+ \centering
+  % 插入图片
+  \includegraphics[width=0.5\linewidth]{t5.png}
+  % 图片标题
+  \captionof{figure}{使用修饰器改变函数行为}
+  \label{fig:example}
+\end{minipage}
+
+6.
+\begin{verbatim} 
+	使用Python的内置函数type来动态创建一个类
+	def create_class(name, bases, attrs):
+	return type(name, bases, attrs)
+	MyClass = create_class('MyClass', (object,), {'x': 1})
+	print(MyClass)
+	print(MyClass.x)
+\end{verbatim}
+
+\noindent
+\begin{minipage}{\linewidth}
+	\centering
+	% 插入图片
+	\includegraphics[width=0.5\linewidth]{t6.png}
+	% 图片标题
+	\captionof{figure}{用type动态创建一个类}
+	\label{fig:example}
+\end{minipage}
+
+7.\begin{verbatim}
+    用functools.partial创建部分函数应用
+    from functools import partial
+    def multiply(x, y):
+         return x * y
+    double = partial(multiply, 3)
+    print(double(4))
+  \end{verbatim}
+
+\noindent
+\begin{minipage}{\linewidth}
+ \centering
+  % 插入图片
+  \includegraphics[width=0.5\linewidth]{t7.png}
+  % 图片标题
+  \captionof{figure}{用functools.partial创建部分函数应用}
+  \label{fig:example}
+\end{minipage}
+
+8.
+\begin{verbatim}
+    class MyCallable:
+    def __init__(self, value):
+        self.value = value
+    def __call__(self):
+        print(self.value)
+    callable_obj = MyCallable("Hello")
+    callable_obj()
+\end{verbatim}
+
+\noindent
+\begin{minipage}{\linewidth}
+ \centering
+  % 插入图片
+  \includegraphics[width=0.5\linewidth]{t8.png}
+  % 图片标题
+  \captionof{figure}{输出结果：}
+  \label{fig:example}
+\end{minipage}
+
+9.
+\begin{verbatim}
+	动态属性访问： 使用__getattr__和__setattr__可以拦截对属性的访问和赋值。
+	由于__getattr__魔术方法的存在，即使name和age在DynamicAttributes类中没有定义，
+	这些属性也会从kwargs字典中获取，并正确返回。
+	
+	class DynamicAttributes:
+	def __init__(self, **kwargs):
+	self.kwargs = kwargs
+	def __getattr__(self, attr):
+	return self.kwargs.get(attr, None)
+	obj = DynamicAttributes(name='lihua', age=20)
+	print(obj.name)  
+	print(obj.age)   
+\end{verbatim}
+
+
+\noindent
+\begin{minipage}{\linewidth}
+	\centering
+	% 插入图片
+	\includegraphics[width=0.5\linewidth]{t9.png}
+	% 图片标题
+	\captionof{figure}{元编程动态属性访问}
+	\label{fig:example}
+\end{minipage}
+
+
+\subsection{Pytorch简单学习例子3个}
+1.张量的使用 
+\begin{verbatim}
+     import torch
+     # 创建一个张量
+     a = torch.tensor([1, 2, 3])
+     print(a)
+     # 加法操作
+     b = torch.tensor([4, 5, 6])
+     sum_ab = a + b
+     print(sum_ab)
+     # 乘法操作
+     product_ab = a * b
+     print(product_ab)
+\end{verbatim}
+
+\begin{minipage}{\linewidth}
+    \centering
+     % 插入图片
+     \includegraphics[width=0.5\linewidth]{py1.png}
+     % 图片标题
+     \captionof{figure}{张量的使用}
+     \label{fig:example}
+\end{minipage}
+
+2.用Pytorch建立网络
+\begin{verbatim}
+	import torch.nn as nn
+	import torch.nn.functional as F
+	
+	# 定义一个网络
+	class Net(nn.Module):
+	
+	def __init__(self):
+	super(Net, self).__init__()
+	# 定义网络层
+	self.conv1 = nn.Conv2d(1, 6, 3)  # 输入通道1，输出通道6，3x3卷积核
+	self.conv2 = nn.Conv2d(6, 16, 3)
+	# 定义全连接层
+	self.fc1 = nn.Linear(16 * 6 * 6, 120)  # 6*6从图像维度推断
+	self.fc2 = nn.Linear(120, 84)
+	self.fc3 = nn.Linear(84, 10)
+	
+	def forward(self, x):
+	# 在网络前向传播过程中定义数据流
+	x = F.max_pool2d(F.relu(self.conv1(x)), (2, 2))
+	x = F.max_pool2d(F.relu(self.conv2(x)), 2)
+	x = x.view(-1, self.num_flat_features(x))
+	x = F.relu(self.fc1(x))
+	x = F.relu(self.fc2(x))
+	x = self.fc3(x)
+	return x
+	
+	def num_flat_features(self, x):
+	size = x.size()[1:]  # 除去批处理维度的其他所有维度
+	num_features = 1
+	for s in size:
+	num_features *= s
+	return num_features
+	
+	net = Net()
+	print(net)
+	
+\end{verbatim}
+
+\noindent
+\begin{minipage}{\linewidth}
+	\centering
+	% 插入图片
+	\includegraphics[width=0.5\linewidth]{py2.png}
+	% 图片标题
+	\captionof{figure}{网络建立后的结果}
+	\label{fig:example}
+\end{minipage}
+
+3.用Pytorch对值进行预测
+\begin{verbatim}
+        import torch
+        import torch.nn as nn
+        import torch.optim as optim
+        # 定义一个简单的线性回归模型
+        class LinearRegressionModel(nn.Module):
+            def __init__(self, input_dim, output_dim):
+                super(LinearRegressionModel, self).__init__()
+                # 定义一个线性层，即矩阵乘法层
+                self.linear = nn.Linear(input_dim, output_dim)
+
+            def forward(self, x):
+                # 应用线性层，即执行矩阵乘法
+                out = self.linear(x)
+                return out
+        # 设置输入和输出的维度
+        input_dim = 1  # 假设我们只有一个特征
+        output_dim = 1  # 假设我们预测一个值
+        # 实例化模型
+        model = LinearRegressionModel(input_dim, output_dim)
+        # 定义损失函数和优化器
+        criterion = nn.MSELoss()  # 均方误差损失函数
+        optimizer = optim.SGD(model.parameters(), lr=0.01)  # 随机梯度下降优化器
+        # 生成一些随机数据来模拟训练过程
+        # 假设我们的数据集是 y = 2x + 1
+        x_train = torch.randn(100, input_dim)  # 100个样本，每个样本一个特征
+        y_train = 2 * x_train + 1  # 真实值
+        # 训练模型
+        num_epochs = 1000  # 训练的轮数
+        for epoch in range(num_epochs):
+            # 前向传播
+            outputs = model(x_train)
+
+            # 计算损失
+            loss = criterion(outputs, y_train)
+
+            # 清零梯度
+            optimizer.zero_grad()
+
+            # 反向传播和优化
+            loss.backward()
+            optimizer.step()
+
+            if (epoch + 1) % 100 == 0:
+                print(f'Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item():.4f}')
+
+        # 测试模型
+        with torch.no_grad():  # 在这个上下文中，不需要计算梯度
+            predicted = model(x_train).data.numpy()  # 获得预测值
+            actual = y_train.data.numpy()  # 获得真实值
+            print(f'Predicted: {predicted[:5]}')
+            print(f'Actual: {actual[:5]}')
+
+\end{verbatim}
+
+\noindent
+\begin{minipage}{\linewidth}
+ \centering
+  % 插入图片
+  \includegraphics[width=0.5\linewidth]{py3.png}
+  % 图片标题
+  \captionof{figure}{预测和真实结果}
+  \label{fig:example}
+\end{minipage}
+
+\section{解题感悟}
+代码调试和性能分析让我高效率的解决了代码的问题
+这些技能提升了我的编程能力，也使我明白了持续优化和创新的重要性。
+
+元编程让我意识到，代码可以是一种可以动态变化、自我进化的实体。
+
+PyTorch的动态计算图能够让我轻松地构建和调试复杂的神经网络。
+这就是深度学习的强大。
+
+github路径
+您可以在此查看项目的源代码: 
+
+\url{https://github.com/L-c-hang/home4}
+
+
+\end{document}
